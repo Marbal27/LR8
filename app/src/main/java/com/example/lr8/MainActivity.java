@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,13 +46,17 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(Void ... voids) {
             Request.Builder builder = new Request.Builder();
             Request request = builder
-                    .url("https://api.openweathermap.org/data/2.5/weather?lat=57.9194&lon=59.965&appid=ff41c1373d337fc2b98d2b185e517c68")
+                    .url("https://api.openweathermap.org/data/2.5/weather?lat=57.9194&lon=59.965&appid=ff41c1373d337fc2b98d2b185e517c68&units=metric")
                     .build();
             OkHttpClient client = new OkHttpClient().newBuilder().build();
             try {
                 Response response = client.newCall(request).execute();
                 JSONObject jsonObject = new JSONObject(response.body().string());
-                return jsonObject.getString("weather") + jsonObject.getString("main");
+
+                String weather_main = jsonObject.getJSONArray("weather").getJSONObject(0).getString("main");
+                String weather_description = jsonObject.getJSONArray("weather").getJSONObject(0).getString("description");
+                String weather_temp = jsonObject.getJSONObject("main").getString("temp");
+                return weather_main + "\n"+ weather_description +"\n"+ weather_temp;
             } catch (IOException e){
                 throw new RuntimeException(e);
             } catch (JSONException e) {
